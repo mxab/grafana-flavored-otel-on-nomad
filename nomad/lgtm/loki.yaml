@@ -1,0 +1,38 @@
+auth_enabled: false
+server:
+  http_listen_address: "0.0.0.0"
+  http_listen_port: 3100
+common:
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory
+storage_config:
+  aws:
+    {{- range nomadService "minio" }}
+    endpoint: {{ .Address }}:{{ .Port }}
+    {{- end }}
+    insecure: true
+    bucketnames: loki
+    access_key_id: minio
+    secret_access_key: miniosecret
+    s3forcepathstyle: true
+
+  tsdb_shipper:
+    active_index_directory: {{ env "NOMAD_ALLOC_DIR" }}/data/tsdb-index
+    cache_location: {{ env "NOMAD_ALLOC_DIR" }}/data/tsdb-cache
+ingester:
+  wal:
+    dir: {{ env "NOMAD_ALLOC_DIR" }}/data/wal
+    flush_on_shutdown: true
+compactor:
+  working_directory: {{ env "NOMAD_ALLOC_DIR" }}/data/compactor
+schema_config:
+  configs:
+    - from: 2025-01-01
+      store: tsdb
+      object_store: filesystem
+      schema: v13
+      index:
+        period: 24h
+        prefix: index_

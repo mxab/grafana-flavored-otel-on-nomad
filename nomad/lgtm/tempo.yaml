@@ -1,0 +1,48 @@
+server:
+  http_listen_address: "0.0.0.0"
+  http_listen_port: {{ env "NOMAD_PORT_http" }}
+  grpc_listen_port: {{ env "NOMAD_PORT_grpc" }}
+
+distributor:
+  receivers:                           # this configuration will listen on all ports and protocols that tempo is capable of.
+    otlp:
+      protocols:
+        http:
+          endpoint: "0.0.0.0:4318"
+
+metrics_generator:
+  processor:
+    service_graphs:
+      max_items: 10000
+
+  storage:
+    path: {{ env "NOMAD_ALLOC_DIR" }}/data/tempo/wal
+    remote_write:
+    {{- range nomadService "mimir" }}
+      - url: http://{{ .Address }}:{{ .Port }}/api/prom/push
+        send_exemplars: true
+    {{- end}}
+        
+
+storage:
+  trace:
+    backend: s3
+    wal:
+      path: {{ env "NOMAD_ALLOC_DIR" }}/data/tempo/wal
+    local:
+      path: {{ env "NOMAD_ALLOC_DIR" }}/data/tempo/blocks
+    s3:
+      bucket: tempo                    # how to store data in s3
+      {{- range nomadService "minio-api" }}
+      endpoint: {{ .Address }}:{{ .Port }}
+      {{- end}}
+      insecure: true
+      access_key: minio
+      secret_key: miniosecret
+
+overrides:
+  defaults:
+    metrics_generator:
+      processors:
+        - service-graphs
+        - span-metrics
