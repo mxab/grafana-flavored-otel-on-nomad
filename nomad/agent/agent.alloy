@@ -1,0 +1,50 @@
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+livedebugging {
+  enabled = true
+}
+
+otelcol.receiver.otlp "default" {
+  http {
+    
+  }
+  grpc {}
+
+  output {
+    metrics = [otelcol.processor.batch.default.input]
+    logs    = [otelcol.processor.batch.default.input]
+    traces  = [otelcol.processor.batch.default.input]
+  }
+}
+
+otelcol.processor.batch "default" {
+  output {
+    metrics = [otelcol.exporter.otlp.default.input]
+    logs    = [otelcol.exporter.otlp.default.input]
+    traces  = [otelcol.exporter.otlp.default.input]
+  }
+}
+
+local.file "gateways" {
+  filename = "/local/gateways.yaml"
+}
+
+otelcol.exporter.loadbalancing "default" {
+    resolver {
+        static {
+            hostnames = encoding.from_yaml(local.file.gateways.content)
+        }
+    }
+    protocol {
+        otlp {
+            client {
+              tls {
+                insecure = true
+              }
+            }
+        }
+    }
+}

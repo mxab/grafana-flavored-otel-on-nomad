@@ -1,18 +1,19 @@
-job "otel-agent" {
-    type = "system"
+job "otel-gateway" {
+    type = "service"
     datacenters = ["*"]
 
-    group "agent" {
+    group "gateway" {
+        count = 3
 
         network {
             port "http" {
-                static = 12345
+                to = 12345
             }
             port "otlp_grpc" {
-                static = 4317
+                to = 4317
             }
             port "otlp_http" {
-                static = 4318
+                to = 4318
             }
         }
 
@@ -26,19 +27,19 @@ job "otel-agent" {
                     "run",
                     "--server.http.listen-addr=0.0.0.0:12345",
                     "--storage.path=${NOMAD_ALLOC_DIR}/data",
-                    "${NOMAD_TASK_DIR}/agent.alloy" 
+                    "${NOMAD_TASK_DIR}/gateway.alloy" 
                 ]   
                 ports = ["http", "otlp_grpc", "otlp_http"]
 
             }
 
             template {
-                data = file("agent.alloy")
-                destination = "local/agent.alloy"
+                data = file("gateway.alloy")
+                destination = "local/gateway.alloy"
             }
             template {
-                data = file("gateways.yaml")
-                destination = "local/gateways.yaml"   
+                data = file("backends.yaml")
+                destination = "local/backends.yaml"   
             }
         }
     }

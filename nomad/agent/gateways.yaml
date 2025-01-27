@@ -1,0 +1,3 @@
+{{- range nomadService "otel-gateway" }}
+- {{ .Address }}:{{ .Port }}
+{{- end }}
