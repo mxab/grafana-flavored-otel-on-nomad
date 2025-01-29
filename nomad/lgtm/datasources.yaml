@@ -1,5 +1,6 @@
 apiVersion: 1
 datasources:
+# MIMIR ###################################################################
 - name: Mimir
   type: prometheus
   access: proxy
@@ -12,9 +13,11 @@ datasources:
   url: http://{{ .Address }}:{{ .Port }}/prometheus
   {{- end}}
   jsonData:
-    httpHeaderName1: "X-Scope-OrgID"
-  secureJsonData:
-    httpHeaderValue1: "demo"
+    timeInterval: "1m"
+    exemplarTraceIdDestinations:
+      - datasourceUid: tempo
+        name: 'TraceID'
+# LOKI #########################################################################
 - name: Loki
   type: loki
   access: proxy
@@ -25,6 +28,14 @@ datasources:
   {{- range nomadService "loki" }}
   url: http://{{ .Address }}:{{ .Port }}
   {{- end}}
+  jsonData:
+    derivedFields:
+      - datasourceUid: tempo
+        matcherRegex: trace_id
+        name: trace_id
+        url: $$$${__value.raw}
+        matcherType: label
+# TEMPO #########################################################################
 - name: Tempo
   type: tempo
   access: proxy
@@ -35,3 +46,23 @@ datasources:
   {{- range nomadService "tempo" }}
   url: http://{{ .Address }}:{{ .Port }}
   {{- end}}
+  jsonData:
+    lokiSearch:
+      datasourceUid: loki
+    nodeGraph:
+      enabled: true
+    serviceMap:
+      datasourceUid: mimir
+    tracesToLogsV2:
+      datasourceUid: loki
+      spanStartTimeShift: '-30m'
+      spanEndTimeShift: '+30m'
+      tags:
+        - key: "service.name"
+          value: "service_name"
+      filterByTraceId: false
+      filterBySpanID: false
+      customQuery: true
+      
+      query: '{ $$$${__tags}} | trace_id = `$$$${__span.traceId}` | span_id = `$$$${__span.spanId}`'
+

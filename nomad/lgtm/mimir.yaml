@@ -1,5 +1,5 @@
 target: all,alertmanager,overrides-exporter
-
+multitenancy_enabled: false
 # Configure Mimir to use Minio as object storage backend.
 common:
   storage:
