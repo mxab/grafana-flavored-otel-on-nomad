@@ -42,5 +42,24 @@ job "otel-gateway" {
                 destination = "local/backends.yaml"   
             }
         }
+
+        service {
+            provider = "nomad"
+            name = "otel-gateway-alloy"
+            port = "http"
+            
+        }
+        service {
+            provider = "nomad"
+            name = "otel-gateway-otlp-http"
+            port = "http"
+            check {
+                type = "http"
+                path = "/-/ready"
+                interval = "10s"
+                timeout = "2s"
+                port = "http"
+            }
+        }
     }
 }

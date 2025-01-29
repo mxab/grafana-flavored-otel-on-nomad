@@ -33,7 +33,7 @@ otelcol.exporter.otlphttp "metrics" {
   client {
     endpoint = encoding.from_yaml(local.file.backends.content).metrics
     tls {
-        enabled = false
+        insecure = true
     }
   }
 }
@@ -41,7 +41,7 @@ otelcol.exporter.otlphttp "logs" {
   client {
     endpoint = encoding.from_yaml(local.file.backends.content).logs
     tls {
-        enabled = false
+        insecure = true
     }
   }
 }
@@ -49,7 +49,7 @@ otelcol.exporter.otlphttp "traces" {
   client {
     endpoint = encoding.from_yaml(local.file.backends.content).traces
     tls {
-        enabled = false
+        insecure = true
     }
   }
 }

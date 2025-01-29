@@ -4,6 +4,9 @@ job "otel-agent" {
 
     group "agent" {
 
+        restart {
+            mode = "delay"
+        }
         network {
             port "http" {
                 static = 12345
@@ -26,7 +29,7 @@ job "otel-agent" {
                     "run",
                     "--server.http.listen-addr=0.0.0.0:12345",
                     "--storage.path=${NOMAD_ALLOC_DIR}/data",
-                    "${NOMAD_TASK_DIR}/agent.alloy" 
+                    "${NOMAD_TASK_DIR}/agent.alloy"
                 ]   
                 ports = ["http", "otlp_grpc", "otlp_http"]
 

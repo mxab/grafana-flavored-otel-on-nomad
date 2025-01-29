@@ -1,50 +1,50 @@
 logging {
-  level  = "info"
-  format = "logfmt"
+	level  = "info"
+	format = "logfmt"
 }
 
 livedebugging {
-  enabled = true
+	enabled = true
 }
 
 otelcol.receiver.otlp "default" {
-  http {
-    
-  }
-  grpc {}
+	http { }
 
-  output {
-    metrics = [otelcol.processor.batch.default.input]
-    logs    = [otelcol.processor.batch.default.input]
-    traces  = [otelcol.processor.batch.default.input]
-  }
+	grpc { }
+
+	output {
+		metrics = [otelcol.processor.batch.default.input]
+		logs    = [otelcol.processor.batch.default.input]
+		traces  = [otelcol.processor.batch.default.input]
+	}
 }
 
 otelcol.processor.batch "default" {
-  output {
-    metrics = [otelcol.exporter.otlp.default.input]
-    logs    = [otelcol.exporter.otlp.default.input]
-    traces  = [otelcol.exporter.otlp.default.input]
-  }
+	output {
+		metrics = [otelcol.exporter.loadbalancing.default.input]
+		logs    = [otelcol.exporter.loadbalancing.default.input]
+		traces  = [otelcol.exporter.loadbalancing.default.input]
+	}
 }
 
 local.file "gateways" {
-  filename = "/local/gateways.yaml"
+	filename = "/local/gateways.yaml"
 }
 
 otelcol.exporter.loadbalancing "default" {
-    resolver {
-        static {
-            hostnames = encoding.from_yaml(local.file.gateways.content)
-        }
-    }
-    protocol {
-        otlp {
-            client {
-              tls {
-                insecure = true
-              }
-            }
-        }
-    }
+	resolver {
+		static {
+			hostnames = encoding.from_yaml(local.file.gateways.content)
+		}
+	}
+
+	protocol {
+		otlp {
+			client {
+				tls {
+					insecure = true
+				}
+			}
+		}
+	}
 }
