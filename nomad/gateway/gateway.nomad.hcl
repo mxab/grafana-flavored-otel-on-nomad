@@ -51,8 +51,8 @@ job "otel-gateway" {
         }
         service {
             provider = "nomad"
-            name = "otel-gateway-otlp-http"
-            port = "http"
+            name = "otel-gateway-otlp-grpc"
+            port = "otlp_grpc"
             check {
                 type = "http"
                 path = "/-/ready"

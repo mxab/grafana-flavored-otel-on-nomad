@@ -21,9 +21,9 @@ otelcol.receiver.otlp "default" {
 
 otelcol.processor.batch "default" {
 	output {
-		metrics = [otelcol.exporter.loadbalancing.default.input]
-		logs    = [otelcol.exporter.loadbalancing.default.input]
-		traces  = [otelcol.exporter.loadbalancing.default.input]
+		metrics = [otelcol.exporter.loadbalancing.by_service.input]
+		logs    = [otelcol.exporter.loadbalancing.by_service.input]
+		traces  = [otelcol.exporter.loadbalancing.by_trace_id.input]
 	}
 }
 
@@ -31,13 +31,30 @@ local.file "gateways" {
 	filename = "/local/gateways.yaml"
 }
 
-otelcol.exporter.loadbalancing "default" {
+otelcol.exporter.loadbalancing "by_service" {
+	routing_key = "service"
 	resolver {
 		static {
 			hostnames = encoding.from_yaml(local.file.gateways.content)
 		}
 	}
-
+	protocol {
+		otlp {
+			client {
+				tls {
+					insecure = true
+				}
+			}
+		}
+	}
+}
+otelcol.exporter.loadbalancing "by_trace_id" {
+	routing_key = "traceID"
+	resolver {
+		static {
+			hostnames = encoding.from_yaml(local.file.gateways.content)
+		}
+	}
 	protocol {
 		otlp {
 			client {

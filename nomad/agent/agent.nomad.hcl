@@ -27,6 +27,7 @@ job "otel-agent" {
                 
                 args = [
                     "run",
+                    "--stability.level=experimental", # metrics load balancer
                     "--server.http.listen-addr=0.0.0.0:12345",
                     "--storage.path=${NOMAD_ALLOC_DIR}/data",
                     "${NOMAD_TASK_DIR}/agent.alloy"
