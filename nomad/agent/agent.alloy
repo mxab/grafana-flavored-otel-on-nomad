@@ -13,6 +13,38 @@ otelcol.receiver.otlp "default" {
 	grpc { }
 
 	output {
+		metrics = [otelcol.processor.transform.nomad_attributes.input]
+		logs    = [otelcol.processor.transform.nomad_attributes.input]
+		traces  = [otelcol.processor.transform.nomad_attributes.input]
+	}
+}
+
+otelcol.processor.transform "nomad_attributes" {
+	metric_statements {
+		context    = "resource"
+		statements = [
+			`set(attributes["nomad.node.datacenter"], "{{ env "node.datacenter" }}" )`,
+			`set(attributes["nomad.node.unique.name"], "{{ env "node.unique.name" }}" )`,
+		]
+	}
+
+	log_statements {
+		context    = "resource"
+		statements = [
+			`set(attributes["nomad.node.datacenter"], "{{ env "node.datacenter" }}" )`,
+			`set(attributes["nomad.node.unique.name"], "{{ env "node.unique.name" }}" )`,
+		]
+	}
+
+	trace_statements {
+		context    = "resource"
+		statements = [
+			`set(attributes["nomad.node.datacenter"], "{{ env "node.datacenter" }}" )`,
+			`set(attributes["nomad.node.unique.name"], "{{ env "node.unique.name" }}" )`,
+		]
+	}
+
+	output {
 		metrics = [otelcol.processor.batch.default.input]
 		logs    = [otelcol.processor.batch.default.input]
 		traces  = [otelcol.processor.batch.default.input]
@@ -33,11 +65,13 @@ local.file "gateways" {
 
 otelcol.exporter.loadbalancing "by_service" {
 	routing_key = "service"
+
 	resolver {
 		static {
 			hostnames = encoding.from_yaml(local.file.gateways.content)
 		}
 	}
+
 	protocol {
 		otlp {
 			client {
@@ -48,13 +82,16 @@ otelcol.exporter.loadbalancing "by_service" {
 		}
 	}
 }
+
 otelcol.exporter.loadbalancing "by_trace_id" {
 	routing_key = "traceID"
+
 	resolver {
 		static {
 			hostnames = encoding.from_yaml(local.file.gateways.content)
 		}
 	}
+
 	protocol {
 		otlp {
 			client {

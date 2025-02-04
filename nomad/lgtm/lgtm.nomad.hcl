@@ -8,6 +8,9 @@ job "lgtm" {
       port "http" {
         to = 8080
       }
+      port "memberlist" {
+        to = 7946
+      }
     }
 
     task "mimir" {
@@ -18,7 +21,7 @@ job "lgtm" {
         # hostname ?
 
         hostname = "mimir-${NOMAD_ALLOC_INDEX}"
-        ports = ["http"]
+        ports = ["http", "memberlist"]
       }
 
       resources {
@@ -44,6 +47,11 @@ job "lgtm" {
         interval = "10s"
         timeout  = "2s"
       }
+    }
+    service {
+      name = "mimir-memberlist"
+      port = "memberlist"
+      provider = "nomad"
     }
 
   }
