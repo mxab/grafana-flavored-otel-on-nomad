@@ -17,7 +17,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.var;
 import lombok.extern.slf4j.Slf4j;
 
 @Entity
@@ -30,7 +29,7 @@ class Salutation {
 	@Id
 	Integer id;
 	@Basic
-	String data;
+	String text;
 }
 
 interface SalutationRepository extends CrudRepository<Salutation, Integer> {
@@ -51,7 +50,8 @@ class SalutationController {
 		log.atInfo()
 				.addKeyValue("random_salutation_id", randomId)
 				.log("Looking up salutation");
-		return repo.findById(randomId).get().getData();
+		
+		return repo.findById(randomId).get().getText();
 	}
 }
 
