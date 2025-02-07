@@ -10,4 +10,4 @@ toolchainManagement {
         }
     }
 }
-rootProject.name = 'java-demo'
+rootProject.name = 'greeting-provider'
