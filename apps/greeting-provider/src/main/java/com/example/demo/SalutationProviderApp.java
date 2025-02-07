@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.persistence.Basic;
@@ -42,14 +43,12 @@ class SalutationController {
 
 	SalutationRepository repo;
 
-	@GetMapping("/random-salutation")
-	public String hello() {
+	@GetMapping("/get-salutation-for-name")
+	public String salutation(@RequestParam String name) {
 
+		var randomId = name.hashCode() % 3; // random but deterministic ;)
 		
-		var randomId = now().getSecond() % 3; // random ;)
-		log.atInfo()
-				.addKeyValue("random_salutation_id", randomId)
-				.log("Looking up salutation");
+		log.info("Looking up salutation with id {}", randomId);
 		
 		return repo.findById(randomId).get().getText();
 	}

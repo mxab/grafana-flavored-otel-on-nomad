@@ -1,25 +1,25 @@
-job "java-demo" {
+job "hello-world" {
 
   type        = "service"
   datacenters = ["dc1"]
 
   
-  group "java-demo" {
+  group "hello-world" {
 
     network {
       port "http" {
-        static = 8080
         to     = 8080
+        static = 8080
       }
     }
 
 
-    task "java-demo" {
+    task "hello-world" {
 
       driver = "docker"
 
       config {
-        image = "java-demo:0.0.1-SNAPSHOT"
+        image = "hello-world:1.0.0"
         ports = ["http"]
       }
       artifact {
@@ -30,6 +30,14 @@ job "java-demo" {
         }
       }
       template {
+        data =<<-EOF
+        {{ range nomadService "greeting-provider" }} 
+        GREETINGPROVIDER_URL=http://{{ .Address }}:{{ .Port }}
+        {{ end }}
+        EOF
+        destination = "secrets/app.env"
+      }
+      template {
         env = true
 
         data        = <<-EOF
@@ -37,16 +45,15 @@ job "java-demo" {
             OTEL_TRACES_EXPORTER=otlp
             OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
             OTEL_EXPORTER_OTLP_ENDPOINT=http://{{ env "attr.unique.network.ip-address" }}:4318
-            
+
             OTEL_RESOURCE_ATTRIBUTES=service.name={{ env "NOMAD_TASK_NAME"}},service.instance.id={{ env "NOMAD_SHORT_ALLOC_ID"}}
-            
-            # OTEL_SERVICE_NAME={{ env "NOMAD_TASK_NAME"}} # would work only for service.name
 
             OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_CODE_ATTRIBUTES=true
             OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_KEY_VALUE_PAIR_ATTRIBUTES=true
             OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_MDC_ATTRIBUTES="*"
+
         EOF
-        destination = "secrets/envoy.env"
+        destination = "secrets/otel.env"
       }
       resources {
         cpu    = 500
@@ -54,7 +61,7 @@ job "java-demo" {
       }
     }
     service {
-      name     = "java-demo"
+      name     = "hello-world"
       port     = "http"
       provider = "nomad"
       check {

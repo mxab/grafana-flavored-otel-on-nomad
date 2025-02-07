@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <link rel="stylesheet" href="/webjars/bulma/1.0.3/css/bulma.min.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="columns">
+        <div class="column is-offset-one-quarter is-half columns">
+          <div class="column">
+            <h1 class="title">Greet Someone!</h1>
+          </div>
+          <div class="column">
+            <form action="#" th:action="@{/}" method="get">
+              <input
+                class="input"
+                name="greetee"
+                type="text"
+                placeholder="World"
+              />
+              <button class="button is-primary" type="submit">Greet</button>
+            </form>
+          </div>
+
+          <div
+            class="column notification is-primary"
+            th:if="${greeting}"
+            th:text="${greeting}"
+          >
+            Hello, World!
+          </div>
+          <div
+            class="column notification is-danger"
+            th:if="${error}"
+            th:text="${error}"
+          >
+            Error!
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

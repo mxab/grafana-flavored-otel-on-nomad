@@ -10,4 +10,8 @@ toolchainManagement {
         }
     }
 }
-rootProject.name = 'greeting-provider'
+rootProject.name = 'demo-apps'
+
+include 'greeting-provider'
+
+include 'hello-world'
