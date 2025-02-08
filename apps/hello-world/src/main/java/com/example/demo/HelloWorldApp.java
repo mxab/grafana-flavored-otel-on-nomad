@@ -42,8 +42,8 @@ class GreetingController {
 
 			model.addAttribute("greeting", greeting);
 		} catch (Exception e) {
-			log.warn("Error while greeting the user", e);
-			model.addAttribute("error", "Error while greeting the user");
+			log.error("Error while greeting the user", e);
+			model.addAttribute("error", "Error while greeting the user!");
 		}
 
 		return "greeting";

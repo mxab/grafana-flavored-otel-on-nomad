@@ -1,6 +1,7 @@
 {
     "screencastMode.keyboardOptions": {
-        "showKeys": false
+        "showKeys": false,
+        "showKeybindings": false
     },
     "java.compile.nullAnalysis.mode": "automatic",
     "java.configuration.updateBuildConfiguration": "interactive"
