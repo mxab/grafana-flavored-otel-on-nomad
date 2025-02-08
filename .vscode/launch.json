@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-HelloWorldApp<hello-world>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.demo.HelloWorldApp",
+            "projectName": "hello-world",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env",
+            "env": {
+                "SALUTATIONPROVIDER_URL": "http://localhost:9090"
+            }
+        }
+    ]
+}

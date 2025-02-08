@@ -24,7 +24,7 @@ class GreetingController {
 	RestClient salutationProviderClient;
 
 	@GetMapping("/")
-	public String hello(@RequestParam Optional<String> greetee, Model model) {
+	public String hello(@RequestParam("greetee") Optional<String> greetee, Model model) {
 
 		if (greetee.isEmpty()) {
 			return "greeting";

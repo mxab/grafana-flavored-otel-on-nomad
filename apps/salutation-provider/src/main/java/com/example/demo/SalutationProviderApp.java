@@ -46,7 +46,7 @@ class SalutationController {
 	@GetMapping("/get-salutation-for-name")
 	public String salutation(@RequestParam String name) {
 
-		var randomId = name.hashCode() % 3; // random but deterministic ;)
+		var randomId = name.hashCode() % 3; // random but deterministic, also buggy ;)
 		
 		log.info("Looking up salutation with id {}", randomId);
 		

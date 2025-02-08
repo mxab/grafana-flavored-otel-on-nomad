@@ -7,39 +7,36 @@
   </head>
   <body>
     <div class="container">
-      <div class="columns">
-        <div class="column is-offset-one-quarter is-half columns">
-          <div class="column">
-            <h1 class="title">Greet Someone!</h1>
-          </div>
-          <div class="column">
-            <form action="#" th:action="@{/}" method="get">
-              <input
-                class="input"
-                name="greetee"
-                type="text"
-                placeholder="World"
-              />
-              <button class="button is-primary" type="submit">Greet</button>
-            </form>
-          </div>
+      <div class="columns is-centered pt-6">
+        <div class="column is-half box pt-2">
+          <h1 class="title">Greet Someone!</h1>
+          <form class="block" action="#" th:action="@{/}" method="get">
+            <div class="field has-addons">
+              <div class="control">
+                <input
+                  class="input is-large"
+                  name="greetee"
+                  type="text"
+                  placeholder="World"
+                />
+              </div>
 
-          <div
-            class="column notification is-primary"
-            th:if="${greeting}"
-            th:text="${greeting}"
-          >
-            Hello, World!
+              <div class="control is-large">
+                <button class="button is-primary is-large" type="submit">
+                  Greet
+                </button>
+              </div>
+            </div>
+          </form>
+          <div class="block notification is-primary" th:if="${greeting}">
+            <span th:text="${greeting}" class="is-size-4">Hello, World!</span>
           </div>
-          <div
-            class="column notification is-danger"
-            th:if="${error}"
-            th:text="${error}"
-          >
-            Error!
+          <div class="block notification is-danger" th:if="${error}">
+            <span th:text="${error}" class="is-size-4"> Error!</span>
           </div>
         </div>
       </div>
+      <div class="columns is-centered"></div>
     </div>
   </body>
 </html>
