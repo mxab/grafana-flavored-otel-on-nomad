@@ -12,6 +12,6 @@ toolchainManagement {
 }
 rootProject.name = 'demo-apps'
 
-include 'greeting-provider'
+include 'salutation-provider'
 
 include 'hello-world'

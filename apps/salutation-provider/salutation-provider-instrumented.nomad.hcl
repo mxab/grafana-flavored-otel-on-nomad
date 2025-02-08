@@ -1,10 +1,10 @@
-job "greeting-provider" {
+job "salutation-provider" {
 
   type        = "service"
   datacenters = ["dc1"]
 
   
-  group "greeting-provider" {
+  group "salutation-provider" {
 
     network {
       port "http" {
@@ -13,12 +13,12 @@ job "greeting-provider" {
     }
 
 
-    task "greeting-provider" {
+    task "salutation-provider" {
 
       driver = "docker"
 
       config {
-        image = "greeting-provider:1.0.0"
+        image = "salutation-provider:1.0.0"
         ports = ["http"]
       }
       artifact {
@@ -47,7 +47,7 @@ job "greeting-provider" {
             OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_MDC_ATTRIBUTES="*"
 
         EOF
-        destination = "secrets/otel.env"
+        destination = "local/otel.env"
       }
       resources {
         cpu    = 500
@@ -55,7 +55,7 @@ job "greeting-provider" {
       }
     }
     service {
-      name     = "greeting-provider"
+      name     = "salutation-provider"
       port     = "http"
       provider = "nomad"
       check {

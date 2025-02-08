@@ -30,16 +30,17 @@ job "hello-world" {
         }
       }
       template {
+        env        = true
         data =<<-EOF
-        {{ range nomadService "greeting-provider" }} 
-        GREETINGPROVIDER_URL=http://{{ .Address }}:{{ .Port }}
+        {{ range nomadService "salutation-provider" }} 
+        SALUTATIONPROVIDER_URL=http://{{ .Address }}:{{ .Port }}
         {{ end }}
         EOF
-        destination = "secrets/app.env"
+        destination = "local/app.env"
       }
+
       template {
         env = true
-
         data        = <<-EOF
             JAVA_TOOL_OPTIONS="-javaagent:/local/opentelemetry-javaagent.jar"
             OTEL_TRACES_EXPORTER=otlp
@@ -48,12 +49,9 @@ job "hello-world" {
 
             OTEL_RESOURCE_ATTRIBUTES=service.name={{ env "NOMAD_TASK_NAME"}},service.instance.id={{ env "NOMAD_SHORT_ALLOC_ID"}}
 
-            OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_CODE_ATTRIBUTES=true
-            OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_KEY_VALUE_PAIR_ATTRIBUTES=true
-            OTEL_INSTRUMENTATION_LOGBACK_APPENDER_EXPERIMENTAL_CAPTURE_MDC_ATTRIBUTES="*"
 
         EOF
-        destination = "secrets/otel.env"
+        destination = "local/otel.env"
       }
       resources {
         cpu    = 500

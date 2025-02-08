@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,8 +60,10 @@ public class HelloWorldApp {
 	}
 
 	@Bean
-	public RestClient salutationProviderClient(@Value("${greetingprovider.url:}") String greetingProviderUrl) {
-		return RestClient.builder().baseUrl(greetingProviderUrl).build();
+	public RestClient salutationProviderClient(@Value("${salutation-provider.url}") String greetingProviderUrl) {
+		return RestClient.builder()
+		.requestFactory(new HttpComponentsClientHttpRequestFactory()) // 
+		.baseUrl(greetingProviderUrl).build();
 	}
 
 }
