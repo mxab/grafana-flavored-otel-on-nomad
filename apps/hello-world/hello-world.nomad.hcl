@@ -22,28 +22,7 @@ job "hello-world" {
         image = "hello-world:1.0.0"
         ports = ["http"]
       }
-      artifact {
-        source      = "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.12.0/opentelemetry-javaagent.jar"
-        destination = "local/"
-        options {
-          archive = false
-        }
-      }
-
-      template {
-        env         = true
-        data        = <<-EOF
-            
-            JAVA_TOOL_OPTIONS="-javaagent:/local/opentelemetry-javaagent.jar"
-            
-            OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
-            OTEL_EXPORTER_OTLP_ENDPOINT=http://{{ env "attr.unique.network.ip-address" }}:4318
-
-            OTEL_RESOURCE_ATTRIBUTES=service.name={{ env "NOMAD_TASK_NAME"}},service.instance.id={{ env "NOMAD_SHORT_ALLOC_ID"}}
-        EOF
-        destination = "local/otel.env"
-      }
-
+      
       template {
         env         = true
         data        = <<-EOF

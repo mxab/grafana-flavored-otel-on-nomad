@@ -1,7 +1,6 @@
 server:
   http_listen_address: "0.0.0.0"
-  http_listen_port: {{ env "NOMAD_PORT_http" }}
-  grpc_listen_port: {{ env "NOMAD_PORT_grpc" }}
+  grpc_listen_address: "0.0.0.0"
 
 distributor:
   receivers:                           # this configuration will listen on all ports and protocols that tempo is capable of.
@@ -14,15 +13,18 @@ metrics_generator:
   processor:
     service_graphs:
       max_items: 10000
-
+    span_metrics:
   storage:
-    path: {{ env "NOMAD_ALLOC_DIR" }}/data/tempo/wal
+  
+    path: {{ env "NOMAD_ALLOC_DIR" }}/data/tempo/metrics-generator-wal
     remote_write:
-    {{- range nomadService "mimir" }}
+    {{- $allocID := env "NOMAD_ALLOC_ID" -}}
+    {{ range nomadService 1 $allocID "mimir"}}
       - url: http://{{ .Address }}:{{ .Port }}/api/prom/push
         send_exemplars: true
     {{- end}}
-        
+  traces_storage:
+    path: {{ env "NOMAD_ALLOC_DIR" }}/data/tempo/metrics-generator-traces
 
 storage:
   trace:
