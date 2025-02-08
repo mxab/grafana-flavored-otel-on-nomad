@@ -8,7 +8,7 @@ job "otel-agent" {
             mode = "delay"
         }
         network {
-            port "http" {
+            port "ui" {
                 static = 12345
             }
             port "otlp_grpc" {
@@ -23,16 +23,16 @@ job "otel-agent" {
             driver = "docker"
 
             config {
-                image = "grafana/alloy:latest"
+                image = "grafana/alloy:v1.6.1"
                 
                 args = [
                     "run",
-                    "--stability.level=experimental", # metrics load balancer
+                    "--stability.level=experimental",
                     "--server.http.listen-addr=0.0.0.0:12345",
                     "--storage.path=${NOMAD_ALLOC_DIR}/data",
                     "${NOMAD_TASK_DIR}/agent.alloy"
                 ]   
-                ports = ["http", "otlp_grpc", "otlp_http"]
+                ports = ["ui", "otlp_grpc", "otlp_http"]
 
             }
 
@@ -41,8 +41,14 @@ job "otel-agent" {
                 destination = "local/agent.alloy"
             }
             template {
-                data = file("gateways.yaml")
-                destination = "local/gateways.yaml"   
+                data = <<-EOF
+                {{- $allocID := env "NOMAD_ALLOC_ID" -}}
+                {{- range nomadService "otel-gateway-otlp-grpc" }}
+                - {{ .Address }}:{{ .Port }}
+                {{- end }}
+                EOF
+                destination = "local/gateways.yaml"
+                change_mode = "noop"
             }
         }
     }

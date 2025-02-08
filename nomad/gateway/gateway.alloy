@@ -18,6 +18,30 @@ otelcol.receiver.otlp "default" {
   output {
     metrics = [otelcol.processor.batch.default.input]
     logs    = [otelcol.processor.batch.default.input]
+    traces  = [otelcol.processor.tail_sampling.default.input]
+  }
+}
+otelcol.processor.tail_sampling "default" {
+  
+  policy {
+    name = "keep-errors"
+    type = "status_code"
+
+    status_code {
+      status_codes = ["ERROR"]
+    }
+  }
+
+  policy {
+    name = "keep-50-percent"
+    type = "probabilistic"
+
+    probabilistic {
+      sampling_percentage = 50
+    }
+  }
+
+  output {
     traces  = [otelcol.processor.batch.default.input]
   }
 }

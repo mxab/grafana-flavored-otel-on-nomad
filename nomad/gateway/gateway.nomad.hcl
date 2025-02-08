@@ -6,7 +6,7 @@ job "otel-gateway" {
         count = 3
 
         network {
-            port "http" {
+            port "ui" {
                 to = 12345
             }
             port "otlp_grpc" {
@@ -21,7 +21,7 @@ job "otel-gateway" {
             driver = "docker"
 
             config {
-                image = "grafana/alloy:latest"
+                image = "grafana/alloy:v1.6.1"
                 
                 args = [
                     "run",
@@ -29,7 +29,7 @@ job "otel-gateway" {
                     "--storage.path=${NOMAD_ALLOC_DIR}/data",
                     "${NOMAD_TASK_DIR}/gateway.alloy" 
                 ]   
-                ports = ["http", "otlp_grpc", "otlp_http"]
+                ports = ["ui", "otlp_grpc", "otlp_http"]
 
             }
 
@@ -38,17 +38,25 @@ job "otel-gateway" {
                 destination = "local/gateway.alloy"
             }
             template {
-                data = file("backends.yaml")
-                destination = "local/backends.yaml"   
+                data = <<-EOF
+                {{- $allocID := env "NOMAD_ALLOC_ID" -}}
+                {{ range nomadService 1 $allocID "loki"}}
+                logs: http://{{ .Address }}:{{ .Port }}/otlp
+                {{- end }}
+                {{ range nomadService 1 $allocID "mimir"}}
+                metrics: http://{{ .Address }}:{{ .Port }}/otlp
+                {{- end }}
+                {{ range nomadService 1 $allocID "tempo-otlp"}}
+                traces: http://{{ .Address }}:{{ .Port }}
+                {{- end }}
+                EOF
+                destination = "local/backends.yaml"
+                change_mode = "noop"
+
             }
         }
 
-        service {
-            provider = "nomad"
-            name = "otel-gateway-alloy"
-            port = "http"
-            
-        }
+
         service {
             provider = "nomad"
             name = "otel-gateway-otlp-grpc"
@@ -58,7 +66,7 @@ job "otel-gateway" {
                 path = "/-/ready"
                 interval = "10s"
                 timeout = "2s"
-                port = "http"
+                port = "ui"
             }
         }
     }

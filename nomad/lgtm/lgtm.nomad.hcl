@@ -107,10 +107,10 @@ job "lgtm" {
 
     network {
       port "http" {
-        to = 3100
+        to = 80
       }
       port "grpc" {
-
+        to = 9095
       }
       port "otlp_http" {
         to = 4318
