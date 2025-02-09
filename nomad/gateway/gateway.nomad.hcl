@@ -40,15 +40,11 @@ job "otel-gateway" {
             template {
                 data = <<-EOF
                 {{- $allocID := env "NOMAD_ALLOC_ID" -}}
-                {{ range nomadService 1 $allocID "loki"}}
-                logs: http://{{ .Address }}:{{ .Port }}/otlp
-                {{- end }}
-                {{ range nomadService 1 $allocID "mimir"}}
-                metrics: http://{{ .Address }}:{{ .Port }}/otlp
-                {{- end }}
-                {{ range nomadService 1 $allocID "tempo-otlp"}}
-                traces: http://{{ .Address }}:{{ .Port }}
-                {{- end }}
+                
+                logs: {{ range nomadService 1 $allocID "loki" -}}http://{{ .Address }}:{{ .Port }}/otlp{{- end }}
+                metrics: {{ range nomadService 1 $allocID "mimir" -}} http://{{ .Address }}:{{ .Port }}/otlp{{- end }}
+                traces: {{ range nomadService 1 $allocID "tempo-otlp" -}} http://{{ .Address }}:{{ .Port }}{{- end }}
+
                 EOF
                 destination = "local/backends.yaml"
                 change_mode = "noop"

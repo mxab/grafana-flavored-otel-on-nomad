@@ -24,7 +24,6 @@ otelcol.processor.transform "nomad_attributes" {
 		context    = "resource"
 		statements = [
 			`set(attributes["nomad.node.datacenter"], "{{ env "node.datacenter" }}" )`,
-			`set(attributes["nomad.node.unique.name"], "{{ env "node.unique.name" }}" )`,
 		]
 	}
 
@@ -32,7 +31,6 @@ otelcol.processor.transform "nomad_attributes" {
 		context    = "resource"
 		statements = [
 			`set(attributes["nomad.node.datacenter"], "{{ env "node.datacenter" }}" )`,
-			`set(attributes["nomad.node.unique.name"], "{{ env "node.unique.name" }}" )`,
 		]
 	}
 
@@ -40,7 +38,6 @@ otelcol.processor.transform "nomad_attributes" {
 		context    = "resource"
 		statements = [
 			`set(attributes["nomad.node.datacenter"], "{{ env "node.datacenter" }}" )`,
-			`set(attributes["nomad.node.unique.name"], "{{ env "node.unique.name" }}" )`,
 		]
 	}
 

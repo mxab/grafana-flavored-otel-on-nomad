@@ -32,13 +32,12 @@ job "salutation-provider" {
         env = true
 
         data        = <<-EOF
+          JAVA_TOOL_OPTIONS="-javaagent:/local/opentelemetry-javaagent.jar"
+          
+          OTEL_RESOURCE_ATTRIBUTES=service.name={{ env "NOMAD_TASK_NAME"}},service.instance.id={{ env "NOMAD_SHORT_ALLOC_ID"}}
 
-            JAVA_TOOL_OPTIONS="-javaagent:/local/opentelemetry-javaagent.jar"
-            
-            OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
-            OTEL_EXPORTER_OTLP_ENDPOINT=http://{{ env "attr.unique.network.ip-address" }}:4318
-
-            OTEL_RESOURCE_ATTRIBUTES=service.name={{ env "NOMAD_TASK_NAME"}},service.instance.id={{ env "NOMAD_SHORT_ALLOC_ID"}}
+          OTEL_EXPORTER_OTLP_PROTOCOL="http/protobuf"
+          OTEL_EXPORTER_OTLP_ENDPOINT=http://{{ env "attr.unique.network.ip-address" }}:4318
         EOF
         destination = "local/otel.env"
       }

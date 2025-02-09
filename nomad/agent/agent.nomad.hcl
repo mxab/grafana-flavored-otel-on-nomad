@@ -6,6 +6,8 @@ job "otel-agent" {
 
         restart {
             mode = "delay"
+            interval = "20s"
+            delay = "10s"
         }
         network {
             port "ui" {
@@ -43,9 +45,9 @@ job "otel-agent" {
             template {
                 data = <<-EOF
                 {{- $allocID := env "NOMAD_ALLOC_ID" -}}
-                {{- range nomadService "otel-gateway-otlp-grpc" }}
-                - {{ .Address }}:{{ .Port }}
-                {{- end }}
+                [
+                {{ range nomadService "otel-gateway-otlp-grpc" -}}"{{ .Address }}:{{ .Port }}",{{- end }}
+                ]
                 EOF
                 destination = "local/gateways.yaml"
                 change_mode = "noop"
