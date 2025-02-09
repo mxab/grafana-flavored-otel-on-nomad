@@ -7,15 +7,13 @@ expected_template_block_patch := {
 	"op": "add",
 	"path": "/TaskGroups/0/Tasks/0/Templates/-",
 	"value": {
-		"EmbeddedTmpl": sprintf("%s=%s", ["OTEL_RESOURCE_ATTRIBUTES", concat(
-			",",
-			[
+		"EmbeddedTmpl": concat("\n", [
+			sprintf("%s=%s", ["OTEL_RESOURCE_ATTRIBUTES", concat(",", [
 				"service.name={{ env \"NOMAD_TASK_NAME\" }}",
 				"service.instance.id={{ env \"NOMAD_SHORT_ALLOC_ID\" }}",
 				"nomad.alloc.id={{ env \"NOMAD_ALLOC_ID\" }}",
 				"nomad.alloc.name={{ env \"NOMAD_ALLOC_NAME\" }}",
 				"nomad.alloc.index={{ env \"NOMAD_ALLOC_INDEX\" }}",
-				"nomad.alloc.createTime={{ timestamp }}",
 				"nomad.group.name={{ env \"NOMAD_GROUP_NAME\" }}",
 				"nomad.job.id={{ env \"NOMAD_JOB_ID\" }}",
 				"nomad.job.name={{ env \"NOMAD_JOB_NAME\" }}",
@@ -24,8 +22,10 @@ expected_template_block_patch := {
 				"nomad.namespace={{ env \"NOMAD_NAMESPACE\" }}",
 				"nomad.task.name={{ env \"NOMAD_TASK_NAME\" }}",
 				"nomad.task.driver=docker",
-			],
-		)]),
+			])]),
+			"OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf",
+			"OTEL_EXPORTER_OTLP_ENDPOINT=http://{{ env \"attr.unique.network.ip-address\" }}:4318",
+		]),
 		"DestPath": "local/otel.env",
 		"ChangeMode": "restart",
 		"ChangeScript": null,
@@ -121,7 +121,6 @@ test_otel_patch_full if {
 		}],
 	}
 	patch_ops := otel.patch with input as input_job
-
 
 	patch_ops == [
 		{

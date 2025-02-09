@@ -74,25 +74,28 @@ add_templates_list_ops contains op if {
 add_otel_env_template_ops contains op if {
 	some g, t
 
-	EmbeddedTmpl := sprintf("%s=%s", ["OTEL_RESOURCE_ATTRIBUTES", concat(
-		",",
-		[
-			"service.name={{ env \"NOMAD_TASK_NAME\" }}",
-			"service.instance.id={{ env \"NOMAD_SHORT_ALLOC_ID\" }}",
-			"nomad.alloc.id={{ env \"NOMAD_ALLOC_ID\" }}",
-			"nomad.alloc.name={{ env \"NOMAD_ALLOC_NAME\" }}",
-			"nomad.alloc.index={{ env \"NOMAD_ALLOC_INDEX\" }}",
-			"nomad.alloc.createTime={{ timestamp }}",
-			"nomad.group.name={{ env \"NOMAD_GROUP_NAME\" }}",
-			"nomad.job.id={{ env \"NOMAD_JOB_ID\" }}",
-			"nomad.job.name={{ env \"NOMAD_JOB_NAME\" }}",
-			"nomad.job.parentId={{ env \"NOMAD_JOB_PARENT_ID\" }}",
-			sprintf("nomad.job.type=%s", [object.get(input, "Type", "service")]),
-			"nomad.namespace={{ env \"NOMAD_NAMESPACE\" }}",
-			"nomad.task.name={{ env \"NOMAD_TASK_NAME\" }}",
-			sprintf("nomad.task.driver=%s", [input.TaskGroups[g].Tasks[t].Driver]),
-		],
-	)])
+	EmbeddedTmpl := concat("\n", [
+		sprintf("%s=%s", ["OTEL_RESOURCE_ATTRIBUTES", concat(
+			",",
+			[
+				"service.name={{ env \"NOMAD_TASK_NAME\" }}",
+				"service.instance.id={{ env \"NOMAD_SHORT_ALLOC_ID\" }}",
+				"nomad.alloc.id={{ env \"NOMAD_ALLOC_ID\" }}",
+				"nomad.alloc.name={{ env \"NOMAD_ALLOC_NAME\" }}",
+				"nomad.alloc.index={{ env \"NOMAD_ALLOC_INDEX\" }}",
+				"nomad.group.name={{ env \"NOMAD_GROUP_NAME\" }}",
+				"nomad.job.id={{ env \"NOMAD_JOB_ID\" }}",
+				"nomad.job.name={{ env \"NOMAD_JOB_NAME\" }}",
+				"nomad.job.parentId={{ env \"NOMAD_JOB_PARENT_ID\" }}",
+				sprintf("nomad.job.type=%s", [object.get(input, "Type", "service")]),
+				"nomad.namespace={{ env \"NOMAD_NAMESPACE\" }}",
+				"nomad.task.name={{ env \"NOMAD_TASK_NAME\" }}",
+				sprintf("nomad.task.driver=%s", [input.TaskGroups[g].Tasks[t].Driver]),
+			],
+		)]),
+		"OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf",
+		"OTEL_EXPORTER_OTLP_ENDPOINT=http://{{ env \"attr.unique.network.ip-address\" }}:4318",
+	])
 	op := {
 		"op": "add",
 		"path": sprintf("/TaskGroups/%d/Tasks/%d/Templates/-", [g, t]),
