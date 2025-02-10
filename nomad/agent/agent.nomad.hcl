@@ -44,7 +44,6 @@ job "otel-agent" {
             }
             template {
                 data = <<-EOF
-                {{- $allocID := env "NOMAD_ALLOC_ID" -}}
                 [
                 {{ range nomadService "otel-gateway-otlp-grpc" -}}"{{ .Address }}:{{ .Port }}",{{- end }}
                 ]
