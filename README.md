@@ -97,3 +97,10 @@ NOMAD_ADDR=http://localhost:6464 nomad run hello-world.nomad.hcl
 ```
 
 Check the nomad ui to inspect the job
+
+
+## Troubleshooting
+
+Mimir th in the LGTM stack is not fully working currently (TODO). If you want to focus on the opentelemetry part you can replace the single components with Grafana's https://github.com/grafana/docker-otel-lgtm. Please check the documentation for more details.
+
+TODO: set this up as an alternative job.
