@@ -5,7 +5,7 @@ import rego.v1
 add_artifacts_field_ops contains op if {
 	some g, t
 
-	object.get(input.TaskGroups[g].Tasks[t], "Artifacts", null) == null
+	object.get(input.job.TaskGroups[g].Tasks[t], "Artifacts", null) == null
 
 	op := {
 		"op": "add",
@@ -16,7 +16,7 @@ add_artifacts_field_ops contains op if {
 
 add_otel_agent_artifact_ops contains op if {
 	some g, t
-	input.TaskGroups[g].Tasks[t]
+	input.job.TaskGroups[g].Tasks[t]
 	op := {
 		"op": "add",
 		"path": sprintf("/TaskGroups/%d/Tasks/%d/Artifacts/-", [g, t]),
@@ -35,7 +35,7 @@ add_otel_agent_artifact_ops contains op if {
 add_env_field_ops contains op if {
 	some g, t
 
-	object.get(input.TaskGroups[g].Tasks[t], "Env", null) == null
+	object.get(input.job.TaskGroups[g].Tasks[t], "Env", null) == null
 
 	op := {
 		"op": "add",
@@ -46,7 +46,7 @@ add_env_field_ops contains op if {
 
 add_java_agent_env_ops contains op if {
 	some g, t
-	input.TaskGroups[g].Tasks[t]
+	input.job.TaskGroups[g].Tasks[t]
 
 	op := {
 		"op": "add",
@@ -60,7 +60,7 @@ add_java_agent_env_ops contains op if {
 add_templates_list_ops contains op if {
 	some g, t
 
-	object.get(input.TaskGroups[g].Tasks[t], "Templates", null) == null
+	object.get(input.job.TaskGroups[g].Tasks[t], "Templates", null) == null
 
 	op := {
 		"op": "add",
@@ -90,7 +90,7 @@ add_otel_env_template_ops contains op if {
 				sprintf("nomad.job.type=%s", [object.get(input, "Type", "service")]),
 				"nomad.namespace={{ env \"NOMAD_NAMESPACE\" }}",
 				"nomad.task.name={{ env \"NOMAD_TASK_NAME\" }}",
-				sprintf("nomad.task.driver=%s", [input.TaskGroups[g].Tasks[t].Driver]),
+				sprintf("nomad.task.driver=%s", [input.job.TaskGroups[g].Tasks[t].Driver]),
 			],
 		)]),
 		"OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf",

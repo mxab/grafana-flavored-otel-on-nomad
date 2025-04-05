@@ -12,7 +12,7 @@ job "nacp" {
     task "nacp" {
       driver = "docker"
       config {
-        image = "ghcr.io/mxab/nacp:v0.6.0"
+        image = "ghcr.io/mxab/nacp:v0.7.0"
         ports = ["http"]
         args  = ["-config", "/local/nacp.conf.hcl"]
       }

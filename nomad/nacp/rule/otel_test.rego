@@ -80,7 +80,7 @@ test_otel_patch if {
 			}],
 		}],
 	}
-	patch_ops := otel.patch with input as input_job
+	patch_ops := otel.patch with input as {"job": input_job}
 
 	patch_ops == [exptected_artifact_patch, exptected_java_agent_env_patch, expected_template_block_patch]
 }
@@ -101,7 +101,7 @@ test_otel_patch_default_to_type_service if {
 			}],
 		}],
 	}
-	patch_ops := otel.patch with input as input_job
+	patch_ops := otel.patch with input as {"job": input_job}
 
 	patch_ops == [exptected_artifact_patch, exptected_java_agent_env_patch, expected_template_block_patch]
 }
@@ -120,7 +120,7 @@ test_otel_patch_full if {
 			}],
 		}],
 	}
-	patch_ops := otel.patch with input as input_job
+	patch_ops := otel.patch with input as {"job": input_job}
 
 	patch_ops == [
 		{
